@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>小峰数据中心</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/static/xiaofeng/js/echarts.min.js"></script>
+</head>
+<style>
+
+
+</style>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/static/html/index.html">小峰数据中心</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li><a href="/static/html/index.html">首页</a></li>
+                <li class="active"><a href="#">人脸搜索</a></li>
+                <!-- <li class="dropdown">
+                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                       Java
+                       <b class="caret"></b>
+                   </a>
+                   <ul class="dropdown-menu">
+                       <li><a href="#">jmeter</a></li>
+                       <li><a href="#">EJB</a></li>
+                       <li><a href="#">Jasper Report</a></li>
+                       <li class="divider"></li>
+                       <li><a href="#">分离的链接</a></li>
+                       <li class="divider"></li>
+                       <li><a href="#">另一个分离的链接</a></li>
+                   </ul>
+               </li>-->
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <form role="form" id="myform">
+        <div class="form-group">
+            <label for="inputfile">上传人脸</label>
+            <input name= "file" type="file" id="inputfile">
+            <!--            <p class="help-block">人脸搜索功能，秒回结果</p>-->
+        </div>
+
+        <button type="button" class="btn btn-warning" onclick="upload()">点击匹配</button>
+    </form>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        更新资料库
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" id="uploadFacesForm">
+                        <div class="form-group">
+                            <label for="name">姓名</label>
+                            <input type="text" name="name" class="form-control" id="name"
+                                   placeholder="请输入姓名">
+                        </div>
+                        <div class="form-group">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="inputfile">头像上传</label>
+                                        <input type="file" name="file" id="inputfile">
+                                    </td>
+
+                                </tr>
+                            </table>
+                            <br>
+                            <p class="help-block">尽量使用脸部清晰,五官无遮挡的头像图片,照片格式只支持jpg,例如：</p>
+                            <img width="150" src="/static/imgs/moban.jpg">
+                        </div>
+                        <div class="form-group">
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" onclick="checkFacesApplication()" class="btn btn-primary">
+                        提交审核
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <div id="row">
+        <div>
+
+            <table class="table">
+                <caption>
+
+                    搜索结果,显示匹配度最高10条记录,无法匹配结果?<a data-toggle="modal" data-target="#myModal">更新资料库</a>
+                    <div id="loaddiv" style="display: none;">
+                        <img height="50" src="/static/imgs/loading.gif">
+                    </div>
+                </caption>
+                <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>图片</th>
+                </tr>
+                </thead>
+                <tbody id="reulstTable">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    function checkFacesApplication() {
+        var form = new FormData(document.getElementById("uploadFacesForm"));
+        $.ajax({
+            url: "/face/upload/",
+            type: "post",
+            data: form,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                alert(data.message)
+            },
+            error: function(e) {
+                alert("网络错误，请重试！！");
+            }
+        });
+    }
+    function upload() {
+        $("#loaddiv").show();
+        var form = new FormData(document.getElementById("myform"));
+        $.ajax({
+            url: "/face/search/",
+            type: "post",
+            data: form,
+            async : true,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                var result = data.message;
+                var table = "";
+                for(var i=0;i<result.length;i++){
+                    table += "<tr>\n" +
+                        "                    <td>"+result[i].name+"</td>\n" +
+                        "                    <td><img src='/static/"+result[i].url+"'></td>\n" +
+                        "                </tr>";
+                }
+                $("#reulstTable").html(table);
+                $("#loaddiv").hide();
+            },
+            error: function(e) {
+                alert("网络错误，请重试！！");
+            }
+        });
+    }
+
+</script>
+</html>
