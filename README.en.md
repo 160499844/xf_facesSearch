@@ -16,8 +16,10 @@ face_recognition
 
 
 #### 使用说明
-1.  在项目根目录下打开cmd,输入python manage.py runserver 8000启动项目（需安装好python3环境,把python安装环境添加到path变量中）
-2.  浏览器输入http://127.0.0.1:8000/static/html/faces.html访问
+1.  需安装好python3环境,把python安装环境添加到path变量中
+2.  在项目根目录,即包含manage.py的目录打开cmd,输入python manage.py makemigrations 和 python manage.py migrate 初始化数据库
+3.  然后输入python manage.py runserver 8000启动项目
+4.  浏览器输入http://127.0.0.1:8000/static/html/faces.html访问
 
 
 #### 参与贡献
